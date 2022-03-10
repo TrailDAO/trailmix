@@ -8,32 +8,46 @@ import { ethers } from 'ethers';
 const TrailDAONFTAddress = process.env.REACT_APP_NFT_ADDRESS || '';
 const TrailDAONFT = require('./TrailDAONFT.json');
 
-// Create mint nft button
 // Create subgraph for trail locations
 // Create geolocation request
 // Create call to hike method on trail contract
 
-// TODO: Display mint price
+// TODO: What trail locations are close by and display that
+// TODO: Look at subgraph
 
 function App() {
   const { address, provider } = useWeb3();
   const [ isMinting, setIsMinting ] = useState(false);
   const [ ownsNFT, setOwnsNFT ] = useState(false);
-
-  const checkNFTOwnership = async () => {
-    if (provider) {
-      const nftContract = new ethers.Contract(TrailDAONFTAddress, TrailDAONFT.abi, provider.getSigner());
-      const balance = await nftContract.balanceOf(address);
-      if (balance > 0) {
-        console.log("Owns NFT");
-        setOwnsNFT(true);
+  const [ mintPrice, setMintPrice ] = useState("0.05");
+  
+  useEffect(() => {
+    const getMintPrice = async () => {
+      if (provider) {
+        const nftContract = new ethers.Contract(TrailDAONFTAddress, TrailDAONFT.abi, provider.getSigner());
+        const mintPrice = await nftContract.mintPrice();
+        if (mintPrice) {
+          setMintPrice(
+            ethers.utils.formatEther(mintPrice)
+          );
+        }
       }
-    }
-  };
+    };
+    getMintPrice();
+  }, [provider]);
 
   useEffect(() => {
-    checkNFTOwnership();
-  }, [address]);
+    const checkNFTOwner = async () => {
+      if (provider) {
+        const nftContract = new ethers.Contract(TrailDAONFTAddress, TrailDAONFT.abi, provider.getSigner());
+        const balance = await nftContract.balanceOf(address);
+        if (balance > 0) {
+          setOwnsNFT(true);
+        }
+      }
+    };
+    checkNFTOwner();
+  }, [address, provider]);
 
   const mint = async () => {
     console.log("Minting for address", address)
@@ -62,6 +76,7 @@ function App() {
         { address ? (
           <>
             <p>Mint an NFT to claim $TRAIL</p>
+            <p>Mint price {mintPrice} Ξ</p>
             <Button colorScheme='blue' size='lg' disabled={isMinting || ownsNFT} onClick={() => mint()}>
               Mint
             </Button>
