@@ -2,11 +2,20 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 
+// Pick background color
+// Create header
+// Create description
+// Connect metamask wallet
+// Create mint nft button
+// Create subgraph for trail locations
+// Create geolocation request
+// Create call to hike method on trail contract
+
 function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
+        <h1>TrailMix </h1>
         <p>
           Edit <code>src/App.tsx</code> and save to reload.
         </p>
