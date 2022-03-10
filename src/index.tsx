@@ -3,10 +3,21 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { ThirdwebProvider } from "@3rdweb/react";
+
+const supportedChainIds = [1, 69];
+
+const connectors = {
+  injected: {}
+};
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <ThirdwebProvider 
+      connectors={connectors} 
+      supportedChainIds={supportedChainIds}>
+      <App />
+    </ThirdwebProvider>  
   </React.StrictMode>,
   document.getElementById('root')
 );
