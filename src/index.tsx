@@ -5,7 +5,8 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { ThirdwebProvider } from "@3rdweb/react";
 
-const supportedChainIds = [1, 69];
+// Ethereum mainnet, Polygon mainnet
+const supportedChainIds = [1, 4, 137];
 
 const connectors = {
   injected: {}
