@@ -20,6 +20,12 @@
   flex-direction: row;
   font-size: calc(10px + 2vmin);
   justify-content: end;
+  align-items: center;
+}
+
+.App-nav-item {
+  margin-right: 10px;
+  margin-top: 10px;
 }
 
 .App-header {
