@@ -24,7 +24,6 @@ function App() {
   const [ trailBalance, setTrailBalance ] = useState("0.0000");
 
   useEffect(() => {
-    // trail balance
     const getTrailBalance = async () => {
       if (provider) {
         const token = new ethers.Contract(TrailTokenAddress, TrailToken.abi, provider.getSigner());
