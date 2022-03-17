@@ -15,6 +15,11 @@
   }
 }
 
+.App-map {
+  height: 35vh;
+  width: 65%;
+}
+
 .App-nav {
   display: flex;
   flex-direction: row;
