@@ -13,9 +13,6 @@ import Instructions from './Instructions';
 import { TrailDAONFTAddress, TrailDAONFT } from './Addresses';
 import './App.css';
 
-// TODO: Use elastic search to find trail locations
-// Create call to hike method on trail contract
-
 function App() {
   const { address, provider } = useWeb3();
   const [ ownsNFT, setOwnsNFT ] = useState(false);

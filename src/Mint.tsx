@@ -51,7 +51,7 @@ function Mint({ afterMint }: MintProps) {
     <>
       <p>Mint an NFT to claim 🏕️ TRAIL</p>
       <p>Mint price {mintPrice} Ξ</p>
-      <Button colorScheme='blue' size='lg' disabled={isMinting} onClick={() => mint()}>
+      <Button colorScheme='green' size='lg' disabled={isMinting} onClick={() => mint()}>
         Mint
       </Button>
     </>
