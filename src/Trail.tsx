@@ -1,6 +1,6 @@
 
 interface Trail {
-  id: string,
+  address: string,
   latitude: string,
   longitude: string,
 }

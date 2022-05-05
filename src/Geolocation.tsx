@@ -1,13 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import GoogleMapReact from 'google-map-react';
+import { Button } from '@chakra-ui/button';
 import getAllTrails from './getAllTrails';
 import EmojiMarker from './EmojiMarker';
-import { Button } from '@chakra-ui/button';
+import { useWeb3 } from '@3rdweb/hooks';
 import Trail from './Trail';
+
+import { TrailTokenAddress } from './Addresses';
+import { ethers } from 'ethers';
+
+export const TrailContract = require('./Trail.json');
 
 const MapsKey = process.env.REACT_APP_MAPS_KEY || '';
 
 function Geolocation() {
+  const { address, provider } = useWeb3();
+
   const [ latitude, setLatitude ] = useState<number>();
   const [ longitude, setLongitude ] = useState<number>();
   const [ nearLatitude, setNearLatitude ] = useState<number>();
@@ -45,11 +53,20 @@ function Geolocation() {
     }
   }, [nearLatitude, nearLongitude]);
 
-  const claim = async () => {
+  const claim = async (trailAddress: string) => {
+    if (provider) {
+      // generatecall snarkjs, not sure how this should work
+
+
+      const trail = new ethers.Contract(trailAddress, TrailContract.abi, provider.getSigner());
+      const tx = await trail.hike(verifyInputs);
+      await tx.wait();
+    }
+
     console.log("claim tokens");
   };
 
-  if (latitude && longitude) {
+  if (latitude && longitude && provider) {
     return (
       <div className='App-map'>
         <GoogleMapReact 
@@ -62,8 +79,8 @@ function Geolocation() {
         <div>
           {trails.map((trail) => (
             <div>
-              <p key={trail.id}>{trail.id}</p>
-              <Button colorScheme='green' size='lg' onClick={() => claim()}>Claim</Button>
+              <p key={trail.address}>{trail.address}</p>
+              <Button colorScheme='green' size='lg' onClick={() => claim(trail.address)}>Claim</Button>
             </div>
           ))}
         </div>

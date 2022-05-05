@@ -17,7 +17,7 @@ const getAllTrails = async (latitude: number, longitude: number): Promise<Trail[
   // Call trail contract to get additional data
   const trails = searchResults.map((searchResult: any) => {
     const trail = {
-      id: searchResult._id,
+      address: searchResult._id,
       latitude: searchResult._source.coordinate.lat,
       longitude: searchResult._source.coordinate.lon
     }
