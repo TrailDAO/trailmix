@@ -56,10 +56,10 @@ function Geolocation() {
   const claim = async (trailAddress: string) => {
     if (provider) {
       // generatecall snarkjs, not sure how this should work
-
+      // verify inputs
 
       const trail = new ethers.Contract(trailAddress, TrailContract.abi, provider.getSigner());
-      const tx = await trail.hike(verifyInputs);
+      const tx = await trail.hike();
       await tx.wait();
     }
 
