@@ -10,7 +10,7 @@ import Geolocation from './Geolocation';
 import TrailBalance from './TrailBalance';
 import Instructions from './Instructions';
 
-import { TrailDAONFTAddress, TrailDAONFT } from './Addresses';
+import { TrailMixNFTAddress, TrailMixNFT } from './Addresses';
 import './App.css';
 
 function App() {
@@ -20,7 +20,7 @@ function App() {
   useEffect(() => {
     const checkNFTOwner = async () => {
       if (provider) {
-        const nftContract = new ethers.Contract(TrailDAONFTAddress, TrailDAONFT.abi, provider.getSigner());
+        const nftContract = new ethers.Contract(TrailMixNFTAddress, TrailMixNFT.abi, provider.getSigner());
         const balance = await nftContract.balanceOf(address);
         if (balance > 0) {
           setOwnsNFT(true);
