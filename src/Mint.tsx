@@ -4,7 +4,7 @@ import { ethers } from 'ethers';
 import { useWeb3 } from '@3rdweb/hooks'
 import { Button } from '@chakra-ui/button';
 
-import { TrailDAONFTAddress, TrailDAONFT } from './Addresses';
+import { TrailMixNFTAddress, TrailMixNFT } from './Addresses';
 
 interface MintProps {
   afterMint: () => void;
@@ -18,7 +18,7 @@ function Mint({ afterMint }: MintProps) {
   useEffect(() => {
     const getMintPrice = async () => {
       if (provider) {
-        const nftContract = new ethers.Contract(TrailDAONFTAddress, TrailDAONFT.abi, provider.getSigner());
+        const nftContract = new ethers.Contract(TrailMixNFTAddress, TrailMixNFT.abi, provider.getSigner());
         const mintPrice = await nftContract.mintPrice();
         if (mintPrice) {
           setMintPrice(
@@ -39,7 +39,7 @@ function Mint({ afterMint }: MintProps) {
   
     setIsMinting(true);
   
-    const nftContract = new ethers.Contract(TrailDAONFTAddress, TrailDAONFT.abi, provider.getSigner());
+    const nftContract = new ethers.Contract(TrailMixNFTAddress, TrailMixNFT.abi, provider.getSigner());
     const tx = await nftContract.mint({ value: ethers.utils.parseEther(mintPrice) });
     await tx.wait();
     
