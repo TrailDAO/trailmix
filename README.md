@@ -109,4 +109,4 @@ Join the TrailMix community:
 - **Contribute to Development**: Check out our repos for smart contracts and frontend.
 - **DAO Participation**: Hold TRAIL tokens to shape the future.
 
-TrailMix is more than an app—it's a movement to regenerate our outdoor world. Let's hit the trail together! 🚀
+TrailMix is more than an app—it's a movement to regenerate our outdoor world. Let's hit the trail together! 🥾⛰️
