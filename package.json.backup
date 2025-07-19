@@ -48,6 +48,7 @@
     ]
   },
   "devDependencies": {
-    "@types/google-map-react": "^2.1.5"
+    "@types/google-map-react": "^2.1.5",
+    "parcel": "^2.15.4"
   }
 }
