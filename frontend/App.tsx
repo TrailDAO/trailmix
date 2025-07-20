@@ -70,7 +70,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#28342e',
   },
   header: {
     flexDirection: 'row',
@@ -78,9 +78,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 10,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: '#28342e',
     borderBottomWidth: 1,
-    borderBottomColor: '#e9ecef',
+    borderBottomColor: '#3a4a44',
   },
   connectWallet: {
     marginLeft: 10,
@@ -96,5 +96,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
+    color: 'white',
   },
 });
