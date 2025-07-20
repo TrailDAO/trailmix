@@ -6,7 +6,10 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "build": "expo export --platform web",
+    "build:production": "expo export --platform web --clear",
+    "deploy": "npm run build:production && echo 'Build complete - ready for deployment'"
   },
   "dependencies": {
     "@expo/metro-runtime": "~5.0.4",
