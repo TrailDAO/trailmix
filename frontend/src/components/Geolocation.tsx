@@ -3,10 +3,10 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'rea
 import * as Location from 'expo-location';
 import MapView, { Marker } from 'react-native-maps';
 import { ethers } from 'ethers';
-import getAllTrails from './getAllTrails';
-import Trail from './Trail';
+import { getAllTrails } from '../utils';
+import { Trail } from '../types';
 
-const TrailContract = require('./Trail.json');
+const TrailContract = require('../contracts/Trail.json');
 
 interface GeolocationProps {
   address?: string;
@@ -79,7 +79,7 @@ function Geolocation({ address, provider }: GeolocationProps) {
   if (!location) {
     return (
       <View style={styles.container}>
-        <Text>Loading location...</Text>
+        <Text style={styles.loadingText}>Loading location...</Text>
       </View>
     );
   }
@@ -169,6 +169,11 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: 'red',
+    textAlign: 'center',
+    margin: 20,
+  },
+  loadingText: {
+    color: 'white',
     textAlign: 'center',
     margin: 20,
   },

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text } from 'react-native';
-import { TrailTokenAddress, TrailToken } from './Addresses';
+import { TrailTokenAddress, TrailToken } from '../contracts';
 import { ethers } from 'ethers';
 
 interface TrailBalanceProps {

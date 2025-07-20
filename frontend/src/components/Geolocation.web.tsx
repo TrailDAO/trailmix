@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
 import { ethers } from 'ethers';
-import getAllTrails from './getAllTrails';
-import Trail from './Trail';
+import { getAllTrails } from '../utils';
+import { Trail } from '../types';
 
-const TrailContract = require('./Trail.json');
+const TrailContract = require('../contracts/Trail.json');
 
 interface GeolocationProps {
   address?: string;
@@ -69,7 +69,7 @@ function Geolocation({ address, provider }: GeolocationProps) {
   if (!location) {
     return (
       <View style={styles.container}>
-        <Text>Loading location...</Text>
+        <Text style={styles.loadingText}>Loading location...</Text>
       </View>
     );
   }
@@ -138,6 +138,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
+    color: 'white',
   },
   noTrailsText: {
     textAlign: 'center',
@@ -173,6 +174,11 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: 'red',
+    textAlign: 'center',
+    margin: 20,
+  },
+  loadingText: {
+    color: 'white',
     textAlign: 'center',
     margin: 20,
   },

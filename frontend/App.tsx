@@ -3,12 +3,17 @@ import { StyleSheet, Text, View, SafeAreaView } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { ethers } from 'ethers';
 
-import { Web3Provider, useWeb3, ConnectWallet } from './Web3Provider';
-import Mint from './Mint';
-import Geolocation from './Geolocation';
-import TrailBalance from './TrailBalance';
-import Instructions from './Instructions';
-import { TrailMixNFTAddress, TrailMixNFT } from './Addresses';
+import { 
+  Web3Provider, 
+  useWeb3, 
+  ConnectWallet,
+  Mint,
+  Geolocation,
+  TrailBalance,
+  Instructions,
+  TrailMixNFTAddress,
+  TrailMixNFT
+} from './src';
 
 function AppContent() {
   const { address, provider } = useWeb3();

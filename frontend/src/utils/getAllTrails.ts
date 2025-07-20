@@ -1,5 +1,5 @@
 import axios from 'axios';
-import Trail from './Trail';
+import { Trail } from '../types';
 
 const esUrl = process.env.EXPO_PUBLIC_ES_NODE;
 

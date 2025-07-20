@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { ethers } from 'ethers';
-import { TrailMixNFTAddress, TrailMixNFT } from './Addresses';
+import { TrailMixNFTAddress, TrailMixNFT } from '../contracts';
 
 interface MintProps {
   address?: string;
@@ -81,6 +81,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 10,
     textAlign: 'center',
+    color: 'white',
   },
   button: {
     backgroundColor: '#22c55e',
