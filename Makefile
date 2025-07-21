@@ -1,4 +1,4 @@
-.PHONY: frontend-dev frontend-install frontend-build contracts-build contracts-test contracts-deploy-arbitrum contracts-deploy-optimism help
+.PHONY: frontend-dev frontend-install frontend-build contracts-prepare contracts-build contracts-test contracts-deploy-arbitrum contracts-deploy-optimism help
 
 # Default target
 help:
@@ -6,6 +6,7 @@ help:
 	@echo "  frontend-dev              - Start frontend development server"
 	@echo "  frontend-install          - Install dependencies for frontend"
 	@echo "  frontend-build            - Build frontend for production"
+	@echo "  contracts-prepare         - Prepare smart contracts with Forge"
 	@echo "  contracts-build           - Build smart contracts with Forge"
 	@echo "  contracts-test            - Run smart contract tests"
 	@echo "  contracts-deploy-arbitrum - Deploy contracts to Arbitrum"
@@ -22,6 +23,9 @@ frontend-build:
 	cd frontend && npm run build
 
 # Contract targets
+contracts-prepare:
+	cd contracts && forge install OpenZeppelin/openzeppelin-contracts
+
 contracts-build:
 	cd contracts && forge build
 
