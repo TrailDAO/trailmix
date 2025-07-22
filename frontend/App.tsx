@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, SafeAreaView } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { ethers } from 'ethers';
+import { useReadContract, useAccount } from 'wagmi';
 
 import { 
   Web3Provider, 
-  useWeb3, 
   ConnectWallet,
   Mint,
   Geolocation,
@@ -16,30 +15,34 @@ import {
 } from './src';
 
 function AppContent() {
-  const { address, provider } = useWeb3();
+  const { address } = useAccount();
   const [ownsNFT, setOwnsNFT] = useState(false);
 
+  // Use wagmi hook at component level
+  const { data: balance, error } = useReadContract({
+    address: TrailMixNFTAddress as `0x${string}`,
+    abi: TrailMixNFT.abi,
+    functionName: 'balanceOf',
+    args: [address as `0x${string}`],
+    query: {
+      enabled: !!address, // Only run when address exists
+    }
+  });
+
+  // Update ownsNFT state when balance changes
   useEffect(() => {
-    const checkNFTOwner = async () => {
-      if (provider && address) {
-        try {
-          const nftContract = new ethers.Contract(TrailMixNFTAddress, TrailMixNFT.abi, provider.getSigner());
-          const balance = await nftContract.balanceOf(address);
-          if (balance > 0) {
-            setOwnsNFT(true);
-          }
-        } catch (error) {
-          console.error("Error checking NFT ownership:", error);
-        }
-      }
-    };
-    checkNFTOwner();
-  }, [address, provider]);
+    if (balance !== undefined) {
+      setOwnsNFT(Number(balance) > 0);
+    }
+    if (error) {
+      console.error("Error checking NFT ownership:", error);
+    }
+  }, [balance, error]);
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TrailBalance address={address} provider={provider} />
+        <TrailBalance />
         <ConnectWallet style={styles.connectWallet} />
       </View>
       
@@ -47,11 +50,9 @@ function AppContent() {
         <Text style={styles.title}>TrailMix 🥾⛰️</Text>
         
         {ownsNFT ? (
-          <Geolocation address={address} provider={provider} />
+          <Geolocation />
         ) : address ? (
           <Mint 
-            address={address} 
-            provider={provider} 
             afterMint={() => setOwnsNFT(true)} 
           />
         ) : (
