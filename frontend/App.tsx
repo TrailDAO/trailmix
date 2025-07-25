@@ -1,7 +1,5 @@
 import "@walletconnect/react-native-compat";
-import { StatusBar } from 'expo-status-bar';
-import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
-import { WagmiProvider, useAccount, useReadContract } from "wagmi";
+import { WagmiProvider } from "wagmi";
 import { mainnet, polygon, arbitrum } from "@wagmi/core/chains";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
@@ -9,16 +7,7 @@ import {
   defaultWagmiConfig,
   AppKit,
 } from "@traildao/appkit-wagmi-react-native";
-import React, { useEffect, useState } from "react";
-import {
-  ConnectWallet,
-  Mint,
-  Geolocation,
-  TrailBalance,
-  Instructions,
-  TrailMixNFTAddress,
-  TrailMixNFT
-} from './src';
+import { AppContent } from './src';
 
 // 0. Setup queryClient
 const queryClient = new QueryClient();
@@ -52,89 +41,12 @@ createAppKit({
 });
 
 export default function App() {
-  const { address } = useAccount();
-  const [ownsNFT, setOwnsNFT] = useState(false);
-
-  const { data: balance, error } = useReadContract({
-    address: TrailMixNFTAddress as `0x${string}`,
-    abi: TrailMixNFT.abi,
-    functionName: 'balanceOf',
-    args: [address as `0x${string}`],
-    query: {
-      enabled: !!address, // Only run when address exists
-    }
-  });
-
-  useEffect(() => {
-    if (balance !== undefined) {
-      setOwnsNFT(Number(balance) > 0);
-    }
-    if (error) {
-      console.error("Error checking NFT ownership:", error);
-    }
-  }, [balance, error]);
-
-
   return (
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
-      <SafeAreaView style={styles.container}>
-        <View style={styles.header}>
-          <TrailBalance />
-          <ConnectWallet style={styles.connectWallet} />
-        </View>
-
-        <View style={styles.content}>
-          <Text style={styles.title}>TrailMix 🥾⛰️ </Text>
-
-          {ownsNFT ? (
-            <Geolocation />
-          ) : address ? (
-            <Mint
-              afterMint={() => setOwnsNFT(true)}
-            />
-          ) : (
-            <Instructions />
-          )}
-        </View>
-
-      <StatusBar style="auto" />
-    </SafeAreaView>
+        <AppContent />
         <AppKit />
       </QueryClientProvider>
     </WagmiProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#28342e',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    backgroundColor: '#28342e',
-    borderBottomWidth: 1,
-    borderBottomColor: '#3a4a44',
-  },
-  connectWallet: {
-    marginLeft: 10,
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-    color: 'white',
-  },
-});
