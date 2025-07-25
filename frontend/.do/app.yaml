@@ -5,7 +5,7 @@ services:
   github:
     repo: traildao/trailmix
     branch: main
-  build_command: npm run build:production
+  build_command: npm run build
   output_dir: /dist
   http_port: 8080
   envs:
@@ -21,7 +21,7 @@ static_sites:
   github:
     repo: traildao/trailmix
     branch: main
-  build_command: npm run build:production
+  build_command: npm run build
   output_dir: /dist
   envs:
   - key: NPM_CONFIG_LEGACY_PEER_DEPS
