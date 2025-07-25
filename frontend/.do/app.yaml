@@ -15,8 +15,14 @@ services:
   instance_size_slug: basic-xxs
   routes:
   - path: /
-  static_sites:
-  - name: frontend
-    source_dir: /frontend
-    build_command: npm run build:production
-    output_dir: /dist 
+static_sites:
+- name: frontend
+  source_dir: /frontend
+  github:
+    repo: traildao/trailmix
+    branch: main
+  build_command: npm run build:production
+  output_dir: /dist
+  envs:
+  - key: NPM_CONFIG_LEGACY_PEER_DEPS
+    value: "true"
