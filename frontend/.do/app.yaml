@@ -8,6 +8,9 @@ services:
   build_command: npm run build:production
   output_dir: /dist
   http_port: 8080
+  envs:
+  - key: NPM_CONFIG_LEGACY_PEER_DEPS
+    value: "true"
   instance_count: 1
   instance_size_slug: basic-xxs
   routes:
