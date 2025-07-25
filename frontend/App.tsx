@@ -36,7 +36,7 @@ createAppKit({
   projectId,
   wagmiConfig,
   defaultChain: mainnet, // Optional
-  enableAnalytics: true, // Optional - defaults to your Cloud configuration
+  enableAnalytics: false, // Enable this later
   metadata,
 });
 

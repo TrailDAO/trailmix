@@ -2,15 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useAccount, useReadContract } from 'wagmi';
-import {
-  ConnectWallet,
-  Mint,
-  Geolocation,
-  TrailBalance,
-  Instructions,
-  TrailMixNFTAddress,
-  TrailMixNFT
-} from '../index';
+import { AppKitButton } from '@traildao/appkit-wagmi-react-native';
+import Mint from './Mint';
+import Geolocation from './Geolocation';
+import TrailBalance from './TrailBalance';
+import Instructions from './Instructions';
+import { TrailMixNFTAddress, TrailMixNFT } from '../contracts';
 
 export default function AppContent() {
   const { address } = useAccount();
@@ -39,7 +36,7 @@ export default function AppContent() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TrailBalance address={address} />
-        <ConnectWallet style={styles.connectWallet} />
+        <AppKitButton />
       </View>
 
       <View style={styles.content}>
