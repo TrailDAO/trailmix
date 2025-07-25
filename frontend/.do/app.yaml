@@ -3,11 +3,14 @@ services:
 - name: web
   source_dir: /frontend
   github:
-    repo: your-username/trailmix
+    repo: traildao/trailmix
     branch: main
   build_command: npm run build:production
   output_dir: /dist
   http_port: 8080
+  envs:
+  - key: NPM_CONFIG_LEGACY_PEER_DEPS
+    value: "true"
   instance_count: 1
   instance_size_slug: basic-xxs
   routes:

@@ -7,39 +7,39 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "build": "expo export --platform web",
-    "build:production": "expo export --platform web --clear",
-    "deploy": "npm run build:production && echo 'Build complete - ready for deployment'"
+    "build:production": "expo export --platform web --clear"
   },
   "dependencies": {
     "@expo/metro-runtime": "~5.0.4",
-    "@lens-chain/sdk": "^1.0.3",
+    "@react-native-async-storage/async-storage": "2.1.2",
+    "@react-native-community/netinfo": "11.4.1",
     "@tanstack/react-query": "^5.83.0",
-    "@types/react": "~19.0.10",
-    "@types/react-native": "^0.72.8",
+    "@traildao/appkit-wagmi-react-native": "^1.2.6",
     "@walletconnect/react-native-compat": "^2.21.5",
-    "@walletconnect/web3-provider": "^1.8.0",
-    "axios": "^1.10.0",
-    "buffer": "^6.0.3",
-    "connectkit": "^1.9.1",
-    "crypto-browserify": "^3.12.1",
-    "ethers": "^6.15.0",
+    "axios": "^1.11.0",
     "expo": "~53.0.20",
-    "expo-location": "^18.1.6",
+    "expo-application": "~6.1.5",
     "expo-status-bar": "~2.2.3",
-    "process": "^0.11.10",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "react-native": "^0.79.5",
-    "react-native-maps": "^1.20.1",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "react-native": "0.79.5",
+    "react-native-get-random-values": "~1.11.0",
+    "react-native-modal": "14.0.0-rc.1",
+    "react-native-svg": "15.11.2",
     "react-native-web": "^0.20.0",
-    "stream-browserify": "^3.0.0",
-    "typescript": "~5.8.3",
     "viem": "^2.33.0",
     "wagmi": "^2.16.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0"
+    "@babel/core": "^7.25.2",
+    "@types/react": "~19.0.10",
+    "typescript": "~5.8.3"
+  },
+  "overrides": {
+    "connectkit": {
+      "react": "$react",
+      "react-dom": "$react-dom"
+    }
   },
   "private": true
 }

@@ -2,7 +2,7 @@
 
 # Build the app
 echo "Building the app..."
-npm run build:production
+yarn build:production
 
 # Create deployment archive
 echo "Creating deployment archive..."

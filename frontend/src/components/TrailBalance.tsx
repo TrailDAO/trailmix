@@ -1,32 +1,26 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { View, Text } from 'react-native';
 import { TrailTokenAddress, TrailToken } from '../contracts';
-import { ethers } from 'ethers';
+import { useReadContract } from 'wagmi';
+import { formatEther } from 'viem';
 
 interface TrailBalanceProps {
   address?: string;
-  provider?: any;
 }
 
-function TrailBalance({ address, provider }: TrailBalanceProps) {
-  const [trailBalance, setTrailBalance] = useState("0.0");
+function TrailBalance({ address }: TrailBalanceProps) {
+  // Read TRAIL token balance using wagmi
+  const { data: balanceData } = useReadContract({
+    address: TrailTokenAddress as `0x${string}`,
+    abi: TrailToken.abi,
+    functionName: 'balanceOf',
+    args: [address as `0x${string}`],
+    query: {
+      enabled: !!address,
+    },
+  });
 
-  useEffect(() => {
-    const getTrailBalance = async () => {
-      if (provider && address) {
-        try {
-          const token = new ethers.Contract(TrailTokenAddress, TrailToken.abi, provider.getSigner());
-          const balance = await token.balanceOf(address);
-          if (balance) {
-            setTrailBalance(ethers.utils.formatEther(balance));
-          }
-        } catch (error) {
-          console.error("Error fetching trail balance:", error);
-        }
-      }
-    };
-    getTrailBalance();
-  }, [address, provider]);
+  const trailBalance = balanceData ? formatEther(balanceData as bigint) : "0.0";
 
   if (!address) {
     return null;

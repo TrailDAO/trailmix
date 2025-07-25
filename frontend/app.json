@@ -23,10 +23,7 @@
       "edgeToEdgeEnabled": true
     },
     "web": {
-      "favicon": "./assets/favicon.png",
-      "bundler": "metro",
-      "name": "TrailMix Frontend",
-      "description": "TrailMix application frontend"
+      "favicon": "./assets/favicon.png"
     }
   }
 }
