@@ -1,56 +1,76 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { ethers } from 'ethers';
 import { TrailMixNFTAddress, TrailMixNFT } from '../contracts';
+import { useReadContract, useWriteContract, useAccount, useWaitForTransactionReceipt } from 'wagmi';
+import { parseEther, formatEther } from 'viem';
 
 interface MintProps {
-  address?: string;
-  provider?: any;
   afterMint: () => void;
 }
 
-function Mint({ address, provider, afterMint }: MintProps) {
-  const [mintPrice, setMintPrice] = useState("0.05");
+function Mint({ afterMint }: MintProps) {
   const [isMinting, setIsMinting] = useState(false);
+  const { address } = useAccount();
+
+  // Read mint price from contract
+  const { data: mintPriceData } = useReadContract({
+    address: TrailMixNFTAddress as `0x${string}`,
+    abi: TrailMixNFT.abi,
+    functionName: 'mintPrice',
+  });
+
+  const mintPrice = mintPriceData ? formatEther(mintPriceData as bigint) : "0.05";
+
+  // Contract write hook for minting
+  const { data: mintData, writeContract: mintNFT } = useWriteContract();
+
+  // Wait for transaction confirmation
+  const { 
+    data: receipt, 
+    isLoading: isWaitingForTransaction, 
+    error: transactionError 
+  } = useWaitForTransactionReceipt({
+    hash: mintData,
+  });
+
+  // Handle transaction success/error
+  useEffect(() => {
+    if (receipt) {
+      setIsMinting(false);
+      afterMint();
+      Alert.alert("Success", "NFT minted successfully!");
+    }
+  }, [receipt, afterMint]);
 
   useEffect(() => {
-    const getMintPrice = async () => {
-      if (provider) {
-        try {
-          const nftContract = new ethers.Contract(TrailMixNFTAddress, TrailMixNFT.abi, provider.getSigner());
-          const mintPrice = await nftContract.mintPrice();
-          if (mintPrice) {
-            setMintPrice(ethers.utils.formatEther(mintPrice));
-          }
-        } catch (error) {
-          console.error("Error fetching mint price:", error);
-        }
-      }
-    };
-    getMintPrice();
-  }, [provider]);
+    if (transactionError) {
+      setIsMinting(false);
+      console.error("Transaction failed:", transactionError);
+      Alert.alert("Error", "Transaction failed");
+    }
+  }, [transactionError]);
 
   const mint = async () => {
     console.log("Minting for address", address);
 
-    if (!provider) {
-      Alert.alert("Error", "No provider available");
+    if (!address) {
+      Alert.alert("Error", "Please connect your wallet first");
       return;
     }
 
     setIsMinting(true);
 
     try {
-      const nftContract = new ethers.Contract(TrailMixNFTAddress, TrailMixNFT.abi, provider.getSigner());
-      const tx = await nftContract.mint({ value: ethers.utils.parseEther(mintPrice) });
-      await tx.wait();
-      
-      afterMint();
-      Alert.alert("Success", "NFT minted successfully!");
+      mintNFT({
+        address: TrailMixNFTAddress as `0x${string}`,
+        abi: TrailMixNFT.abi,
+        functionName: 'mint',
+        args: [],
+        value: mintPriceData ? mintPriceData as bigint : parseEther("0.05"),
+      });
     } catch (error) {
-      console.error("Error minting:", error);
-      Alert.alert("Error", "Failed to mint NFT");
-    } finally {
+      console.error("Error initiating mint:", error);
+      Alert.alert("Error", "Failed to initiate mint");
       setIsMinting(false);
     }
   };
@@ -62,10 +82,10 @@ function Mint({ address, provider, afterMint }: MintProps) {
       <TouchableOpacity 
         style={[styles.button, isMinting && styles.buttonDisabled]} 
         onPress={mint}
-        disabled={isMinting}
+        disabled={isMinting || isWaitingForTransaction || !address}
       >
         <Text style={styles.buttonText}>
-          {isMinting ? "Minting..." : "Mint"}
+          {isMinting || isWaitingForTransaction ? "Minting..." : "Mint"}
         </Text>
       </TouchableOpacity>
     </View>

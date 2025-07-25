@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
-import { ethers } from 'ethers';
+import { useWriteContract } from 'wagmi';
 import { getAllTrails } from '../utils';
 import { Trail } from '../types';
 
@@ -8,10 +8,10 @@ const TrailContract = require('../contracts/Trail.json');
 
 interface GeolocationProps {
   address?: string;
-  provider?: any;
 }
 
-function Geolocation({ address, provider }: GeolocationProps) {
+function Geolocation({ address }: GeolocationProps) {
+  const { writeContract: executeHike } = useWriteContract();
   const [location, setLocation] = useState<{ latitude: number; longitude: number } | null>(null);
   const [trails, setTrails] = useState<Trail[]>([]);
   const [errorMsg, setErrorMsg] = useState<string>('');
@@ -41,15 +41,18 @@ function Geolocation({ address, provider }: GeolocationProps) {
   }, []);
 
   const claim = async (trailAddress: string) => {
-    if (!provider) {
-      Alert.alert("Error", "No provider available");
+    if (!address) {
+      Alert.alert("Error", "No wallet connected");
       return;
     }
 
     try {
-      const trail = new ethers.Contract(trailAddress, TrailContract.abi, provider.getSigner());
-      const tx = await trail.hike();
-      await tx.wait();
+      executeHike({
+        address: trailAddress as `0x${string}`,
+        abi: TrailContract.abi,
+        functionName: 'hike',
+        args: [],
+      });
       
       Alert.alert("Success", "Trail tokens claimed!");
     } catch (error) {
