@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { TrailTokenAddress, TrailToken } from '../contracts';
 import { useReadContract } from 'wagmi';
 import { formatEther } from 'viem';
@@ -28,9 +28,17 @@ function TrailBalance({ address }: TrailBalanceProps) {
 
   return (
     <View>
-      <Text>🏕️ TRAIL {trailBalance}</Text>
+      <Text style={styles.text}>🏕️ TRAIL {trailBalance}</Text>
     </View>
   );
 }
 
-export default TrailBalance; 
+const styles = StyleSheet.create({
+  text: {
+    color: 'white',
+    fontSize: 16,
+    textAlign: 'center',
+  },
+});
+
+export default TrailBalance;
