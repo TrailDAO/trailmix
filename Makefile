@@ -17,7 +17,7 @@ frontend-dev:
 	cd frontend && npm start
 
 frontend-install:
-	cd frontend && npm install
+	cd frontend && npm ci
 
 frontend-build:
 	cd frontend && npm run build
@@ -27,7 +27,7 @@ contracts-prepare:
 	cd contracts && forge install OpenZeppelin/openzeppelin-contracts
 
 contracts-build:
-	cd contracts && forge build
+	cd contracts && forge build && cd .. && ./copy_abi.sh
 
 contracts-test:
 	cd contracts && forge test

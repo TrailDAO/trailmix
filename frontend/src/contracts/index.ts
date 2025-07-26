@@ -1,2 +1,2 @@
 // Contract exports for clean imports
-export { TrailMixNFTAddress, TrailMixNFT, TrailTokenAddress, TrailToken } from './Addresses'; 
+export { TrailMixNFTAddress, TrailMixNFT, TrailTokenAddress, TrailToken, TrailProofRewardAddress, TrailProofReward } from './Addresses'; 

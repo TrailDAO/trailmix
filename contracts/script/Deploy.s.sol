@@ -4,6 +4,7 @@ pragma solidity ^0.8.24;
 import {Script, console2} from "forge-std/Script.sol";
 import {TrailMixNFT} from "../src/TrailMixNFT.sol";
 import {TrailToken} from "../src/TrailToken.sol";
+import {TrailProofReward} from "../src/TrailProofReward.sol";
 
 contract DeployScript is Script {
     function setUp() public {}
@@ -30,6 +31,10 @@ contract DeployScript is Script {
 
         // Set NFT as minter for tokens
         trailToken.addMinter(address(trailNFT));
+
+        // Deploy TrailProofReward
+        TrailProofReward trailProofReward = new TrailProofReward(deployer);
+        console2.log("TrailProofReward deployed at:", address(trailProofReward));
 
         vm.stopBroadcast();
         
