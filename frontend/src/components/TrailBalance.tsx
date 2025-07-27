@@ -1,14 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { TrailTokenAddress, TrailToken } from '../contracts';
-import { useReadContract } from 'wagmi';
+import { useReadContract, useAccount } from 'wagmi';
 import { formatEther } from 'viem';
 
-interface TrailBalanceProps {
-  address?: string;
-}
-
-function TrailBalance({ address }: TrailBalanceProps) {
+function TrailBalance() {
+  const { address } = useAccount();
   // Read TRAIL token balance using wagmi
   const { data: balanceData } = useReadContract({
     address: TrailTokenAddress as `0x${string}`,

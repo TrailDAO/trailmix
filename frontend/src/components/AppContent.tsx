@@ -35,7 +35,7 @@ export default function AppContent() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TrailBalance address={address} />
+        <TrailBalance />
         <AppKitButton />
       </View>
 
@@ -43,7 +43,7 @@ export default function AppContent() {
         <Text style={styles.title}>TrailMix 🥾⛰️ </Text>
 
         {ownsNFT ? (
-          <TrailNFCVerifier address={address} />
+          <TrailNFCVerifier />
         ) : address ? (
           <Mint
             afterMint={() => setOwnsNFT(true)}

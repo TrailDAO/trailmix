@@ -1,14 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, TextInput } from 'react-native';
-import { useWriteContract } from 'wagmi';
+import { useWriteContract, useAccount } from 'wagmi';
 import { keccak256, stringToBytes } from 'viem';
 import { TrailProofRewardAddress, TrailProofReward } from '../contracts';
 
-interface TrailNFCVerifierProps {
-  address?: string;
-}
-
-function TrailNFCVerifier({ address }: TrailNFCVerifierProps) {
+function TrailNFCVerifier() {
+  const { address } = useAccount();
   const { writeContract: claimReward, isPending } = useWriteContract();
   const [nfcInput, setNfcInput] = useState<string>('');
   const [isScanning, setIsScanning] = useState<boolean>(false);
