@@ -7,7 +7,7 @@ import Mint from './Mint';
 import TrailNFCVerifier from './TrailNFCVerifier';
 import TrailBalance from './TrailBalance';
 import Instructions from './Instructions';
-import { TrailMixNFTAddress, TrailMixNFT } from '../contracts';
+import { TrailMixNFTAddress, TrailMixNFT } from '../config';
 
 export default function AppContent() {
   const { address } = useAccount();

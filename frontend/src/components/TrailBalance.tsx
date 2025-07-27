@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { TrailTokenAddress, TrailToken } from '../contracts';
+import { TrailTokenAddress, TrailToken } from '../config';
 import { useReadContract, useAccount } from 'wagmi';
 import { formatEther } from 'viem';
 

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, TextInput } from 'react-native';
 import { useWriteContract, useAccount } from 'wagmi';
 import { keccak256, stringToBytes } from 'viem';
-import { TrailProofRewardAddress, TrailProofReward } from '../contracts';
+import { TrailProofRewardAddress, TrailProofReward } from '../config';
 
 function TrailNFCVerifier() {
   const { address } = useAccount();

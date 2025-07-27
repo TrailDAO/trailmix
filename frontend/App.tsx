@@ -1,6 +1,6 @@
 import "@walletconnect/react-native-compat";
 import { WagmiProvider } from "wagmi";
-import { mainnet, polygon, arbitrum } from "@wagmi/core/chains";
+import { arbitrum, optimism, arbitrumSepolia, optimismSepolia } from "@wagmi/core/chains";
 import { injected } from "@wagmi/connectors";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
@@ -9,14 +9,12 @@ import {
   AppKit,
 } from "@traildao/appkit-wagmi-react-native";
 import { AppContent } from './src';
+import { projectId } from './src/config';
 
 // 0. Setup queryClient
 const queryClient = new QueryClient();
 
-// 1. Get projectId at https://dashboard.reown.com
-const projectId = "0ae0a5c224a577e8ca207e40a3fbdc4d";
-
-// 2. Create config
+// 1. Create config
 const metadata = {
   name: "Trailmix",
   description: "Trailmix AppKit RN Example",
@@ -28,7 +26,7 @@ const metadata = {
   },
 };
 
-const chains = [mainnet, polygon, arbitrum] as const;
+const chains = [arbitrum, optimism, arbitrumSepolia, optimismSepolia] as const;
 
 const wagmiConfig = defaultWagmiConfig({ 
   chains, 
@@ -43,7 +41,7 @@ const wagmiConfig = defaultWagmiConfig({
 createAppKit({
   projectId,
   wagmiConfig,
-  defaultChain: mainnet, // Optional
+  defaultChain: arbitrumSepolia, // Optional
   enableAnalytics: false, // Enable this later
   metadata,
 });
