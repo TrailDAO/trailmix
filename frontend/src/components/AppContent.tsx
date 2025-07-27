@@ -4,7 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useAccount, useReadContract } from 'wagmi';
 import { AppKitButton } from '@traildao/appkit-wagmi-react-native';
 import Mint from './Mint';
-import Geolocation from './Geolocation';
+import TrailNFCVerifier from './TrailNFCVerifier';
 import TrailBalance from './TrailBalance';
 import Instructions from './Instructions';
 import { TrailMixNFTAddress, TrailMixNFT } from '../contracts';
@@ -43,7 +43,7 @@ export default function AppContent() {
         <Text style={styles.title}>TrailMix 🥾⛰️ </Text>
 
         {ownsNFT ? (
-          <Geolocation address={address} />
+          <TrailNFCVerifier address={address} />
         ) : address ? (
           <Mint
             afterMint={() => setOwnsNFT(true)}
