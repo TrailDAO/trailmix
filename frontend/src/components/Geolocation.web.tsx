@@ -1,111 +1,157 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, TextInput } from 'react-native';
 import { useWriteContract } from 'wagmi';
-import { getAllTrails } from '../utils';
-import { Trail } from '../types';
+import { keccak256, stringToBytes } from 'viem';
+import { TrailProofRewardAddress, TrailProofReward } from '../contracts';
 
-const TrailContract = require('../contracts/Trail.json');
-
-interface GeolocationProps {
+interface TrailNFCVerifierProps {
   address?: string;
 }
 
-function Geolocation({ address }: GeolocationProps) {
-  const { writeContract: executeHike } = useWriteContract();
-  const [location, setLocation] = useState<{ latitude: number; longitude: number } | null>(null);
-  const [trails, setTrails] = useState<Trail[]>([]);
+function TrailNFCVerifier({ address }: TrailNFCVerifierProps) {
+  const { writeContract: claimReward, isPending } = useWriteContract();
+  const [nfcInput, setNfcInput] = useState<string>('');
+  const [isScanning, setIsScanning] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string>('');
+  const [successMsg, setSuccessMsg] = useState<string>('');
 
-  useEffect(() => {
-    // Use browser geolocation API for web
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          setLocation({ latitude, longitude });
+  // Convert string input to bytes32 hash
+  const stringToBytes32 = (str: string): string => {
+    return keccak256(stringToBytes(str));
+  };
 
-          const grossLatitude = Math.round(latitude * 1e5) / 1e5;
-          const grossLongitude = Math.round(longitude * 1e5) / 1e5;
-          
-          getAllTrails(grossLatitude, grossLongitude).then(trails => {
-            setTrails(trails);
-          });
-        },
-        (error) => {
-          setErrorMsg('Permission to access location was denied');
-        }
-      );
-    } else {
-      setErrorMsg('Geolocation is not supported by this browser');
+  const handleNFCScan = async () => {
+    setIsScanning(true);
+    setErrorMsg('');
+    setSuccessMsg('');
+
+    try {
+      // Check if Web NFC is supported
+      if ('NDEFReader' in window) {
+        const ndef = new (window as any).NDEFReader();
+        await ndef.scan();
+        
+        ndef.addEventListener('reading', ({ message }: any) => {
+          const record = message.records[0];
+          if (record.recordType === 'text') {
+            const textDecoder = new TextDecoder(record.encoding);
+            const nfcData = textDecoder.decode(record.data);
+            setNfcInput(nfcData);
+            setIsScanning(false);
+          }
+        });
+      } else {
+        throw new Error('Web NFC is not supported in this browser');
+      }
+    } catch (error) {
+      console.error('NFC scan error:', error);
+      setErrorMsg('NFC scanning failed. Please enter the trail code manually.');
+      setIsScanning(false);
     }
-  }, []);
+  };
 
-  const claim = async (trailAddress: string) => {
+  const claimTrailReward = async () => {
     if (!address) {
       Alert.alert("Error", "No wallet connected");
       return;
     }
 
+    if (!nfcInput.trim()) {
+      setErrorMsg('Please enter a trail code or scan an NFC tag');
+      return;
+    }
+
     try {
-      executeHike({
-        address: trailAddress as `0x${string}`,
-        abi: TrailContract.abi,
-        functionName: 'hike',
-        args: [],
+      setErrorMsg('');
+      setSuccessMsg('');
+      
+      const nfcHash = stringToBytes32(nfcInput.trim());
+      
+      await claimReward({
+        address: TrailProofRewardAddress as `0x${string}`,
+        abi: TrailProofReward.abi,
+        functionName: 'claim',
+        args: [nfcHash],
       });
       
-      Alert.alert("Success", "Trail tokens claimed!");
-    } catch (error) {
-      console.error("Error claiming tokens:", error);
-      Alert.alert("Error", "Failed to claim tokens");
+      setSuccessMsg('Trail reward claimed successfully!');
+      setNfcInput('');
+    } catch (error: any) {
+      console.error("Error claiming reward:", error);
+      let errorMessage = 'Failed to claim reward';
+      
+      if (error.message?.includes('Invalid NFC data')) {
+        errorMessage = 'Invalid trail code. Please check and try again.';
+      } else if (error.message?.includes('Can only claim once per day')) {
+        errorMessage = 'You can only claim once per day. Please try again tomorrow.';
+      } else if (error.message?.includes('Can only claim once')) {
+        errorMessage = 'You have already claimed this trail reward.';
+      }
+      
+      setErrorMsg(errorMessage);
     }
   };
 
-  if (errorMsg) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.errorText}>{errorMsg}</Text>
-      </View>
-    );
-  }
-
-  if (!location) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.loadingText}>Loading location...</Text>
-      </View>
-    );
-  }
-
   return (
     <View style={styles.container}>
-      <View style={styles.mapPlaceholder}>
-        <Text style={styles.mapText}>🗺️ Map View</Text>
-        <Text style={styles.locationText}>
-          Your Location: {location.latitude.toFixed(4)}, {location.longitude.toFixed(4)}
-        </Text>
-        <Text style={styles.mapText}>🏞️ You are here</Text>
+      <View style={styles.header}>
+        <Text style={styles.title}>🏞️ Trail NFC Verifier</Text>
+        <Text style={styles.subtitle}>Scan or enter your trail code to claim rewards</Text>
       </View>
-      
-      <ScrollView style={styles.trailsList}>
-        <Text style={styles.trailsHeader}>Nearby Trails:</Text>
-        {trails.length === 0 ? (
-          <Text style={styles.noTrailsText}>No trails found nearby</Text>
-        ) : (
-          trails.map((trail, index) => (
-            <View key={trail.address} style={styles.trailItem}>
-              <Text style={styles.trailText}>🥾 Trail {index + 1}</Text>
-              <Text style={styles.trailAddress}>{trail.address}</Text>
-              <TouchableOpacity 
-                style={styles.claimButton} 
-                onPress={() => claim(trail.address)}
-              >
-                <Text style={styles.claimButtonText}>Claim</Text>
-              </TouchableOpacity>
-            </View>
-          ))
-        )}
-      </ScrollView>
+
+      <View style={styles.inputSection}>
+        <Text style={styles.inputLabel}>Trail Code:</Text>
+        <TextInput
+          style={styles.textInput}
+          value={nfcInput}
+          onChangeText={setNfcInput}
+          placeholder="Enter trail code or scan NFC tag"
+          placeholderTextColor="#999"
+          multiline={false}
+        />
+        
+        <View style={styles.buttonRow}>
+          <TouchableOpacity 
+            style={[styles.scanButton, isScanning && styles.scanButtonDisabled]} 
+            onPress={handleNFCScan}
+            disabled={isScanning}
+          >
+            <Text style={styles.scanButtonText}>
+              {isScanning ? '📱 Scanning...' : '📱 Scan NFC'}
+            </Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={[styles.claimButton, (isPending || !nfcInput.trim()) && styles.claimButtonDisabled]} 
+            onPress={claimTrailReward}
+            disabled={isPending || !nfcInput.trim()}
+          >
+            <Text style={styles.claimButtonText}>
+              {isPending ? '⏳ Claiming...' : '🎁 Claim Reward'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {errorMsg ? (
+        <View style={styles.messageContainer}>
+          <Text style={styles.errorText}>❌ {errorMsg}</Text>
+        </View>
+      ) : null}
+
+      {successMsg ? (
+        <View style={styles.messageContainer}>
+          <Text style={styles.successText}>✅ {successMsg}</Text>
+        </View>
+      ) : null}
+
+      <View style={styles.infoSection}>
+        <Text style={styles.infoTitle}>How it works:</Text>
+        <Text style={styles.infoText}>• Scan an NFC tag at a trail location</Text>
+        <Text style={styles.infoText}>• Or manually enter the trail code</Text>
+        <Text style={styles.infoText}>• Claim your trail completion reward</Text>
+        <Text style={styles.infoText}>• Rewards may have daily or one-time limits</Text>
+      </View>
     </View>
   );
 }
@@ -113,78 +159,111 @@ function Geolocation({ address }: GeolocationProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: '100%',
-  },
-  mapPlaceholder: {
-    flex: 2,
-    backgroundColor: '#e8f5e8',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 8,
-    margin: 10,
     padding: 20,
+    backgroundColor: '#f8f9fa',
   },
-  mapText: {
+  header: {
+    alignItems: 'center',
+    marginBottom: 30,
+  },
+  title: {
     fontSize: 24,
-    marginBottom: 10,
-  },
-  locationText: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 10,
-  },
-  trailsList: {
-    flex: 1,
-    padding: 10,
-  },
-  trailsHeader: {
-    fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 10,
-    color: 'white',
+    color: '#2d3748',
+    marginBottom: 8,
   },
-  noTrailsText: {
-    textAlign: 'center',
-    color: '#666',
-    fontStyle: 'italic',
-  },
-  trailItem: {
-    padding: 15,
-    marginBottom: 10,
-    backgroundColor: '#f3f4f6',
-    borderRadius: 8,
-  },
-  trailText: {
+  subtitle: {
     fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 5,
+    color: '#718096',
+    textAlign: 'center',
   },
-  trailAddress: {
-    fontSize: 12,
-    color: '#666',
-    marginBottom: 10,
+  inputSection: {
+    marginBottom: 20,
+  },
+  inputLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#2d3748',
+    marginBottom: 8,
+  },
+  textInput: {
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+    backgroundColor: 'white',
+    marginBottom: 16,
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  scanButton: {
+    flex: 1,
+    backgroundColor: '#3182ce',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  scanButtonDisabled: {
+    backgroundColor: '#a0aec0',
+  },
+  scanButtonText: {
+    color: 'white',
+    fontWeight: '600',
+    fontSize: 16,
   },
   claimButton: {
+    flex: 1,
     backgroundColor: '#22c55e',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 6,
-    alignSelf: 'flex-start',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  claimButtonDisabled: {
+    backgroundColor: '#a0aec0',
   },
   claimButtonText: {
     color: 'white',
-    fontWeight: 'bold',
+    fontWeight: '600',
+    fontSize: 16,
+  },
+  messageContainer: {
+    padding: 16,
+    borderRadius: 8,
+    marginBottom: 16,
   },
   errorText: {
-    color: 'red',
+    color: '#e53e3e',
+    fontSize: 16,
     textAlign: 'center',
-    margin: 20,
   },
-  loadingText: {
-    color: 'white',
+  successText: {
+    color: '#38a169',
+    fontSize: 16,
     textAlign: 'center',
-    margin: 20,
+  },
+  infoSection: {
+    backgroundColor: 'white',
+    padding: 16,
+    borderRadius: 8,
+    marginTop: 20,
+  },
+  infoTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#2d3748',
+    marginBottom: 12,
+  },
+  infoText: {
+    fontSize: 14,
+    color: '#4a5568',
+    marginBottom: 6,
+    lineHeight: 20,
   },
 });
 
-export default Geolocation; 
+export default TrailNFCVerifier; 
