@@ -5,29 +5,29 @@ const esUrl = process.env.EXPO_PUBLIC_ES_NODE;
 
 const getAllTrails = async (latitude: number, longitude: number): Promise<Trail[]> => {
   try {
-    // TODO: Call proprietary api for search results
-    const res = await axios.get(`${esUrl}/trails/_search`, {
-      auth: {
-        username: process.env.EXPO_PUBLIC_ES_USER || '',
-        password: process.env.EXPO_PUBLIC_ES_PASS || ''
-      }
+    const overpassUrl = 'https://overpass-api.de/api/interpreter';
+    const radius = 10000; // meters (10km); adjust as needed
+    const query = `[out:json]; way(around:${radius},${latitude},${longitude})["highway"~"path|footway|bridleway"]; out geom;`;
+
+    const res = await axios.post(overpassUrl, `data=${encodeURIComponent(query)}`, {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
 
-    const searchResults = res.data.hits.hits;
-    // TODO: Transform lat lon to decimal degrees
-    // Call trail contract to get additional data
-    const trails = searchResults.map((searchResult: any) => {
-      const trail: Trail = {
-        address: searchResult._id,
-        latitude: searchResult._source.coordinate.lat,
-        longitude: searchResult._source.coordinate.lon
-      };
-      return trail;
-    });
-    
+    const elements = res.data.elements || [];
+    const trails = elements
+      .filter((el: any) => el.geometry && el.geometry.length > 0) // Ensure valid geometry
+      .map((el: any) => {
+        const trail: Trail = {
+          address: el.tags?.name || el.id.toString(),
+          latitude: el.geometry[0].lat.toString(),
+          longitude: el.geometry[0].lon.toString()
+        };
+        return trail;
+      });
+
     return trails;
   } catch (error) {
-    console.error('Error fetching trails:', error);
+    console.error('Error fetching trails from OSM:', error);
     return [];
   }
 };

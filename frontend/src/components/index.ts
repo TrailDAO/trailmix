@@ -1,6 +1,8 @@
-// Component exports for clean imports
+// Component exports for clean import
+export { Mint } from './Mint';
+export { TrailMap } from './TrailMap';
 export { default as AppContent } from './AppContent';
 export { default as Instructions } from './Instructions';
-export { default as Mint } from './Mint';
 export { default as TrailBalance } from './TrailBalance';
-export { default as TrailNFCVerifier } from './TrailNFCVerifier'; 
+export { default as TrailNFCVerifier } from './TrailNFCVerifier';
+export { default as TrailVerifierWithMap } from './TrailVerifierWithMap';

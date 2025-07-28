@@ -3,8 +3,8 @@ import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useAccount, useReadContract } from 'wagmi';
 import { AppKitButton } from '@traildao/appkit-wagmi-react-native';
-import Mint from './Mint';
-import TrailNFCVerifier from './TrailNFCVerifier';
+import { Mint } from './Mint';
+import TrailVerifierWithMap from './TrailVerifierWithMap';
 import TrailBalance from './TrailBalance';
 import Instructions from './Instructions';
 import { TrailMixNFTAddress, TrailMixNFT } from '../config';
@@ -43,7 +43,7 @@ export default function AppContent() {
         <Text style={styles.title}>TrailMix 🥾⛰️ </Text>
 
         {ownsNFT ? (
-          <TrailNFCVerifier />
+          <TrailVerifierWithMap />
         ) : address ? (
           <Mint
             afterMint={() => setOwnsNFT(true)}

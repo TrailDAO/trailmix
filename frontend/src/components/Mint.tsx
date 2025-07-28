@@ -8,7 +8,7 @@ interface MintProps {
   afterMint: () => void;
 }
 
-function Mint({ afterMint }: MintProps) {
+export function Mint({ afterMint }: MintProps) {
   const [isMinting, setIsMinting] = useState(false);
   const { address } = useAccount();
 
@@ -119,5 +119,3 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-
-export default Mint; 
